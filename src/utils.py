@@ -205,8 +205,8 @@ def collect_user_details(request_header):
 
     print("\n=========== CAUTION! =========== CAUTION! CAUTION! =============== CAUTION! =======\n")
     print("===== BE CAREFUL WITH THIS OPTION! AUTO-BOOKING WILL BOOK THE FIRST AVAILABLE CENTRE, DATE, AND A RANDOM SLOT! =====")
-    auto_book = input("Do you want to enable auto-booking? (yes-please or no) Default no: ")
-    auto_book = 'no' if not auto_book else auto_book
+    auto_book = input("Do you want to enable auto-booking? (yes-please or no) Default yes-please: ")
+    auto_book = 'yes-please' if not auto_book else auto_book
 
     collected_details = {
         'beneficiary_dtls': beneficiary_dtls,
@@ -528,8 +528,9 @@ def get_districts(request_header):
             refined_states.append(tmp)
 
         display_table(refined_states)
-        state = int(input('\nEnter State index: '))
-        state_id = states[state - 1]['state_id']
+        state = int(input('\nEnter State index (Default 33): '))
+        index = 32 if not state else state - 1
+        state_id = states[index]['state_id']
 
         districts = requests.get(f'https://cdn-api.co-vin.in/api/v2/admin/location/districts/{state_id}', headers=request_header)
 
@@ -542,7 +543,11 @@ def get_districts(request_header):
                 refined_districts.append(tmp)
 
             display_table(refined_districts)
-            reqd_districts = input('\nEnter comma separated index numbers of districts to monitor : ')
+            reqd_districts = input('\nEnter comma separated index numbers of districts to monitor (Default 3,25): ')
+
+            if not reqd_districts:
+                reqd_districts="3,25"
+
             districts_idx = [int(idx) - 1 for idx in reqd_districts.split(',')]
             reqd_districts = [{
                 'district_id': item['district_id'],
